@@ -1,90 +1,67 @@
+# ライブラリのインポート -------------------
 import streamlit as st
-import numpy as np
-import pandas as pd
+import google.generativeai as genai
 from PIL import Image
-import time
 
-st.title('Streamlit 超入門')
+# APIキーの設定 -----------------------
+genai.configure(api_key="AIzaSyDKS9IwFZSqnon9UXzRE6yWokgrwe-2cmQ")
+model = genai.GenerativeModel('gemini-pro')
 
-# st.write('Display Image')
+# サイド画面 ----------------------------------
 
-# if st.checkbox('Show Image', True):
-#     img = Image.open('./engineer.png')
-#     st.image(img, caption='engineer', use_column_width=True)
+st.sidebar.title('設定', anchor='sidebar')
+st.sidebar.subheader('', divider="rainbow")
 
-# option = st.selectbox('あなたの好きな数字を教えてください。', 
-#              list(range(1, 11)))
+language = st.sidebar.selectbox('言語:',
+                list(["日本語", "英語"]))
 
-# 'あなたの好きな数字は、', option, 'です。'
+formarity = st.sidebar.selectbox('シーン:', 
+             list(["ビジネス", "プライベート"]))
 
-# st.write('Interactive Widgets')
-st.write('プレグレスバーの表示')
-"Start!!"
+perpose = st.sidebar.selectbox('目的:', 
+             list(["打合せの日程調整", "その他"]))
 
-latest_iteration = st.empty()
-bar = st.progress(0)
+if perpose == "その他":
+    perpose = st.sidebar.text_input('その他:')
 
-for i in range(100):
-    latest_iteration.text(f'Iteration {i+1}%')
-    bar.progress(i+1)
-    time.sleep(0.05)
+length = st.sidebar.slider('文字数:', 100, 500, 300)
 
-"Done!!!!"
+st.sidebar.subheader('', divider="rainbow")
+
+reply = st.sidebar.toggle('返信')
+if reply:
+    receivemail = st.sidebar.text_area('受信メール:', height=400)
+
+st.sidebar.subheader('', divider="rainbow")
+
+# メイン画面 -------------------
+
+st.title('メール作成アシスタント', anchor='top')
 
 
+image = Image.open('robot_wide.png')
+st.image(image, use_column_width=True)
 
-left_column, right_column = st.columns(2)
-button = left_column.button('右カラムに文字を表示')
+# ボタンの設定
+col1, col2, col3 = st.columns(3)
+with col2:
+    button = st.button('作成', use_container_width=True)
+
+st.subheader('', divider="rainbow")
+
+user_input = ""
+user_input += f"言語は{language}で文章を作成してください。{length}文字程度の{formarity}シーンでのメールの文章作成してください。メールの目的は{perpose}です。"
+
+if reply:
+    user_input += f"文章は次の受信メールに対する返信として作成下さい。\n\n{receivemail}"
+
+# ボタンが押されたら
 if button:
-    right_column.write('ここは右カラム')
-
-expander = st.expander('問い合わせ')
-expander.write('問い合わせ内容を書く')
-
-# option = st.text_input('あなたの趣味を教えてください。')
-# 'あなたの趣味は、', option, 'です。'
-
-# condition = st.slider('あなたの今の調子は？', 0, 100, 50)
-# "あなたのコンディションは、", condition, "です。"
-
-
-
-# df = pd.DataFrame({
-#     '1列目': [1,2,3,4],
-#     '2列目': [10,20,30,40]
-# })
-
-# df = pd.DataFrame(
-#     np.random.rand(20, 3),
-#     columns=['a', 'b', 'c']
-# )
-
-# df = pd.DataFrame(
-#     np.random.rand(100, 2)/[50, 50] + [35.69, 139.70],
-#     columns=['lat', 'lon']
-# )
-
-# st.map(df)
-
-# st.line_chart(df)
-
-# st.write(df)
-# st.dataframe(df, width=100, height=100)
-# st.dataframe(df.style.highlight_max(axis=0))
-# st.table(df.style.highlight_max(axis=0))
-
-
-
-# """
-# # 章
-# ## 節
-# ### 項
-
-# ```python
-# import streamlit as st
-# import numpy as np
-# import pandas as pd
-# ```
-
-# """
+    user_text = st.chat_message("user")
+    user_text.write(user_input)
+    with st.spinner('文章を作成中...'):
+        response = model.generate_content(user_input)
+    message = st.chat_message("ai")
+    message.write(response.text)
+    st.subheader('', divider="rainbow")
 

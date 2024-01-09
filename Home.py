@@ -5,7 +5,7 @@ from PIL import Image
 
 # ページの設定 ----------------------------
 st.set_page_config(
-    page_title="Gemini Explolar",
+    page_title="Gemini Explorer",
     page_icon="🤖",
 )
 
@@ -15,7 +15,7 @@ model = genai.GenerativeModel('gemini-pro')
 
 # メイン画面 -------------------
 
-st.title('🤖 Welcome to GeminiExplolar 🤖', anchor='top')
+st.title('🤖 Welcome to GeminiExplorer 🤖', anchor='top')
 
 image = Image.open('robot_wide.png')
 st.image(image, use_column_width=True)
@@ -25,7 +25,7 @@ st.sidebar.success("Select the functions above.")
 
 st.markdown(
     """
-    Gemini Explolar (ジェミナイエクスプローラー) へようこそ！
+    Gemini Explorer (ジェミナイエクスプローラー) へようこそ！
     このアプリケーションでは、Gooegleが2023年12月に公開した生成AIモデルGeminiの機能を体験していただけます。\n
     👈 サイドバーからアプリを選択して、Geminiの機能の例を体験下さい！
     """
